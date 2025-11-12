@@ -22,12 +22,17 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          VERSION=${{ github.event.client_payload.version }}
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b update-math-utils-$VERSION
-          git commit -m "Update math-utils-library to version $VERSION"
-          git push origin update-math-utils-$VERSION
+            VERSION=${{ github.event.client_payload.version }}
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git checkout -b update-math-utils-$VERSION || git checkout update-math-utils-$VERSION
+            git add build.gradle
+            if git diff --cached --quiet; then
+            echo "No changes to commit."
+            else
+            git commit -m "Update math-utils-library to version $VERSION"
+            git push origin update-math-utils-$VERSION
+            fi
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
