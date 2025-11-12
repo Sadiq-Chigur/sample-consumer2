@@ -1,0 +1,39 @@
+name: Update Dependency Version
+
+on:
+  repository_dispatch:
+    types: [dependency_update]
+
+jobs:
+  update-gradle-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Update dependency version in build.gradle
+        run: |
+          VERSION=${{ github.event.client_payload.version }}
+          echo "Updating math-utils-library version to $VERSION"
+          # Update dependency line in build.gradle
+          sed -i "s|\(implementation 'com.example.Sadiq-Chigur:math-utils-library:\)[^']*|\1$VERSION|" build.gradle
+
+      - name: Commit and push changes
+        run: |
+          VERSION=${{ github.event.client_payload.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b update-math-utils-$VERSION
+          git commit -am "Update math-utils-library to version $VERSION"
+          git push origin update-math-utils-$VERSION
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-math-utils-${{ github.event.client_payload.version }}
+          base: main
+          title: "Update math-utils-library to version ${{ github.event.client_payload.version }}"
+          body: |
+            This automated PR updates the math-utils-library dependency to version **${{ github.event.client_payload.version }}**.
