@@ -51,3 +51,67 @@ jobs:
           title: "Update math-utils-library to version ${{ github.event.client_payload.version }}"
           body: |
             This automated PR updates the math-utils-library dependency to version **${{ github.event.client_payload.version }}**.
+
+
+
+            name: Update Salesforce Connector Dependency
+
+on:
+  repository_dispatch:
+    types: [dependency_update]
+
+jobs:
+  update-connector:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set VERSION variable
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Triggered dependency update for version: $VERSION"
+
+      - name: Update dependency version in build.gradle
+        run: |
+          echo "Updating math-utils-library version to $VERSION"
+          cd $GITHUB_WORKSPACE
+
+          # Update only the dependency line in build.gradle
+          sed -i -E "s|(implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+
+          echo "Updated line:"
+          grep "math-utils-library" build.gradle || echo "No match found!"
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="update-math-utils-$VERSION"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          git add -f build.gradle
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Update math-utils-library to version $VERSION"
+            git push origin "$BRANCH"
+          fi
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.PAT_Token }}
+          branch: update-math-utils-${{ env.VERSION }}
+          title: "Update math-utils-library to version ${{ env.VERSION }}"
+          body: |
+            Automated dependency update triggered by Salesforce Connector publish.
+            This PR updates the math-utils-library to version **${{ env.VERSION }}**.
+          base: develop
