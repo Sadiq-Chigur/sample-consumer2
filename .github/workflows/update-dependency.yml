@@ -25,7 +25,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b update-math-utils-$VERSION
-          git commit -am "Update math-utils-library to version $VERSION"
+          git commit -m "Update math-utils-library to version $VERSION"
           git push origin update-math-utils-$VERSION
 
       - name: Create Pull Request
