@@ -21,28 +21,30 @@ jobs:
       VERSION: ${{ github.event.inputs.version }}
 
     steps:
+      # Step 1: Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure all branches are fetched
 
-      - name: Set VERSION variable
+      # Step 2: Set VERSION environment variable
+      - name: Set VERSION
         run: |
-          VERSION="${{ github.event.client_payload.version }}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "Triggered dependency update for version: $VERSION"
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          echo "Triggered dependency update for version: ${{ github.event.inputs.version }}"
 
+      # Step 3: Update build.gradle
       - name: Update math-utils-library version in build.gradle
         run: |
           echo "Updating math-utils-library version to $VERSION"
-          cd $GITHUB_WORKSPACE
-
-          sed -i -E "s|implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:[^'\"]+['\"]|implementation 'com.example.Sadiq-Chigur:math-utils-library:$VERSION'|" build.gradle
-
+          
+          # Replace the old version with new version
+          sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+          
           echo "Updated line:"
           grep "math-utils-library" build.gradle || echo "❌ No match found!"
-
-      - name: Verify build.gradle was updated
-        run: |
-          echo "Verifying build.gradle update..."
+          
+          # Verify update
           if grep -q "$VERSION" build.gradle; then
             echo "✅ Version successfully updated in build.gradle"
           else
@@ -50,12 +52,13 @@ jobs:
             exit 1
           fi
 
+      # Step 4: Commit changes
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          BRANCH="update-math-utils-${VERSION}"
+          BRANCH="update-math-utils-$VERSION"
 
           git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git add build.gradle
@@ -65,9 +68,10 @@ jobs:
             exit 0
           else
             git commit -m "Update math-utils-library to version $VERSION"
-            git push origin "$BRANCH"
+            git push origin "$BRANCH" --force
           fi
 
+      # Step 5: Create Pull Request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
