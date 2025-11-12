@@ -1,35 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    ":semanticCommits",
-    ":dependencyDashboard"
-  ],
+  "enabledManagers": ["gradle"],
+  "extends": ["config:base"],
   "packageRules": [
     {
-      "matchManagers": ["gradle"],
-      "groupName": "Salesforce Connector updates",
-      "matchPackagePrefixes": ["com.Sadiq-Chigur.math-utils-library"],
-      "automerge": false,
-      "labels": ["dependencies", "math-utils-library"],
-      "commitMessageTopic": "Salesforce Connector version update"
+      "matchPackagePrefixes": ["com.example:math-utils-library"],
+      "groupName": "sample-library-updates",
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
     }
-  ],
-  "regexManagers": [
-    {
-      "fileMatch": ["^build.gradle$", "^gradle.properties$"],
-      "matchStrings": [
-        "com\\.Sadiq-Chigur\\.math-utils-library\\s*:\\s*['\"](?<currentValue>.*)['\"]"
-      ],
-      "depNameTemplate": "com.Sadiq-Chigur.math-utils-library",
-      "datasourceTemplate": "github-releases",
-      "packageNameTemplate": "Sadiq-Chigur/math-utils-library"
-    }
-  ],
-  "enabledManagers": ["gradle"],
-  "platform": "github",
-  "onboarding": true,
-  "branchPrefix": "renovate/",
-  "prHourlyLimit": 10,
-  "dependencyDashboard": true
+  ]
 }
