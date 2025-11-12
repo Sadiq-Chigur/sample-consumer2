@@ -16,21 +16,25 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Update math-utils-library dependency version
+      - name: Update build.gradle dependency version
         run: |
-            VERSION=${{ github.event.client_payload.version }}
+            VERSION="${{ github.event.client_payload.version }}"
             echo "Updating math-utils-library version to $VERSION"
+            cd $GITHUB_WORKSPACE
+
+            # Update line in build.gradle
             sed -i -E "s|(implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
-            echo "Updated line:"
+
+            echo "Updated line in build.gradle:"
             grep "math-utils-library" build.gradle || echo "No match found!"
 
       - name: Commit and push changes
         run: |
-            VERSION=${{ github.event.client_payload.version }}
+            VERSION="${{ github.event.client_payload.version }}"
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git checkout -b update-math-utils-$VERSION || git checkout update-math-utils-$VERSION
-            git add build.gradle
+            git add -f build.gradle
             if git diff --cached --quiet; then
             echo "No changes to commit."
             else
