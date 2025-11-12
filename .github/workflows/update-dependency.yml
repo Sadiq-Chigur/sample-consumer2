@@ -54,7 +54,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-            token: ${{ secrets.PAT_Token }}
+            token: ${{ secrets.GITHUB_TOKEN }}
             branch: update-math-utils-${{ env.VERSION }}
             title: "Update math-utils-library to version ${{ env.VERSION }}"
             body: "This PR updates the math-utils-library dependency in build.gradle to **${{ env.VERSION }}**."
