@@ -12,12 +12,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Update dependency version in build.gradle
+      - name: Update math-utils-library dependency version
         run: |
-          VERSION=${{ github.event.client_payload.version }}
-          echo "Updating math-utils-library version to $VERSION"
-          # Update dependency line in build.gradle
-          sed -i "s|\(implementation 'com.example.Sadiq-Chigur:math-utils-library:\)[^']*|\1$VERSION|" build.gradle
+            VERSION=${{ github.event.client_payload.version }}
+            echo "Updating math-utils-library version to $VERSION"
+            sed -i -E "s|(implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+            echo "Updated line:"
+            grep "math-utils-library" build.gradle || echo "No match found!"
 
       - name: Commit and push changes
         run: |
