@@ -29,7 +29,6 @@ jobs:
 
           # Update only the dependency line in build.gradle
           sed -i -E "s|(implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
-          #sed -i -E "s|([[:space:]]*implementation[[:space:]]+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1${VERSION}\2|" build.gradle
 
           echo "Updated line:"
           grep "math-utils-library" build.gradle || echo "No match found!"
@@ -53,7 +52,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_Token }}
           branch: update-math-utils-${{ env.VERSION }}
           title: "Update math-utils-library to version ${{ env.VERSION }}"
           body: |
