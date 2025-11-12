@@ -4,6 +4,12 @@ on:
   repository_dispatch:
     types: [dependency_update]
 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "New version of math-utils-library to apply"
+        required: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -11,55 +17,66 @@ permissions:
 jobs:
   update-gradle-version:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.version }}
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # Important! fetches all branches, including main
 
-      - name: Update dependency version
+      - name: Update math-utils-library version in build.gradle
         run: |
-          VERSION=${{ github.event.client_payload.version }}
           echo "Updating math-utils-library version to $VERSION"
+          cd $GITHUB_WORKSPACE
 
-          sed -i -E "s|([[:space:]]*implementation[[:space:]]+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1${VERSION}\2|" build.gradle
+          # Regex: replace old version with new version (handles spacing + quotes)
+          sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
 
-          echo "Updated line in build.gradle:"
+          echo "Updated line:"
           grep "math-utils-library" build.gradle || echo "❌ No match found!"
 
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Verify build.gradle was updated
+        run: |
+          echo "Verifying build.gradle update..."
+          if grep -q "$VERSION" build.gradle; then
+            echo "✅ Version successfully updated in build.gradle"
+          else
+            echo "❌ Version update failed — exiting"
+            exit 1
+          fi
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
           BRANCH="update-math-utils-${VERSION}"
 
           git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git add build.gradle
 
           if git diff --cached --quiet; then
-            echo "No changes to commit."
+            echo "No changes to commit — skipping commit and PR creation."
+            exit 0
           else
             git commit -m "Update math-utils-library to version $VERSION"
             git push origin "$BRANCH"
           fi
-        env:
-          VERSION: ${{ env.VERSION }}
 
       - name: Create Pull Request
+        if: success()  # only run if previous steps succeeded
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: update-math-utils-${{ env.VERSION }}
           title: "Update math-utils-library to version ${{ env.VERSION }}"
           body: |
-            Automated dependency update triggered by Salesforce Connector publish.
-            
-            This PR updates the **math-utils-library** to version **${{ env.VERSION }}**.
-          base: main      # 👈 make sure this is main
+            Automated dependency update triggered by library publish.
+
+            This PR updates **math-utils-library** to version **${{ env.VERSION }}**.
+          base: main
           commit-message: "[create-pull-request] automated change"
           committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
           delete-branch: false
+          draft: false
