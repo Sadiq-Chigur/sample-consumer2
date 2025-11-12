@@ -35,7 +35,7 @@ jobs:
           echo "Updating math-utils-library version to $VERSION"
           cd $GITHUB_WORKSPACE
 
-          sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+          sed -i -E "s|implementation ['\"]com\.example\.Sadiq-Chigur:math-utils-library:[^'\"]+['\"]|implementation 'com.example.Sadiq-Chigur:math-utils-library:$VERSION'|" build.gradle
 
           echo "Updated line:"
           grep "math-utils-library" build.gradle || echo "❌ No match found!"
