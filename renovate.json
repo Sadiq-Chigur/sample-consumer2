@@ -1,14 +1,13 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "enabledManagers": ["gradle"],
   "extends": ["config:base"],
   "packageRules": [
     {
-      "matchPackagePrefixes": ["com.example:math-utils-library"],
-      "groupName": "sample-library-updates",
-      "automerge": true,
-      "automergeType": "pr",
-      "automergeStrategy": "squash"
+      "matchDatasources": ["maven"],
+      "matchPackagePrefixes": ["com.example.Sadiq-Chigur:math-utils-library"],
+      "automerge": false
     }
-  ]
+  ],
+  "labels": ["dependencies", "renovate"],
+  "enabledManagers": ["maven"],
+  "dependencyDashboard": false
 }

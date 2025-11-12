@@ -1,0 +1,19 @@
+name: Renovate Dependency Updates
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [connector-published]  # triggered from connector repo
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout consumer repository
+        uses: actions/checkout@v4
+
+      - name: Run Renovate
+        uses: renovatebot/github-action@v40.1.11
+        with:
+          configurationFile: .github/renovate.json
+          token: ${{ secrets.PAT_Token }}
