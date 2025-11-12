@@ -1,0 +1,6 @@
+{
+  "enabledManagers": ["maven"],
+  "maven": {
+    "fileMatch": ["(^|/)app/pom\\.xml$"]
+  }
+}

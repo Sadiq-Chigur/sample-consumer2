@@ -1,5 +1,7 @@
 {
-  "extends": ["config:base"],
+  "extends": ["config:recommended"],
+  "enabledManagers": ["maven"],
+  "dependencyDashboard": false,
   "packageRules": [
     {
       "matchDatasources": ["maven"],
@@ -7,7 +9,5 @@
       "automerge": false
     }
   ],
-  "labels": ["dependencies", "renovate"],
-  "enabledManagers": ["maven"],
-  "dependencyDashboard": false
+  "labels": ["dependencies", "renovate"]
 }
