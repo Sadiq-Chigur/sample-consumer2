@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [dependency_update]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   update-gradle-version:
     runs-on: ubuntu-latest
