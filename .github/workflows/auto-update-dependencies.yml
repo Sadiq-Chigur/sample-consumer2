@@ -1,3 +1,144 @@
+# name: Auto-Update Dependencies from Other Repo
+
+# on:
+#   schedule:
+#     - cron: '*/5 * * * *'  # Run every 5 minutes
+#   workflow_dispatch:  # Allow manual trigger
+
+# jobs:
+#   check-and-update:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: write
+#       pull-requests: write
+    
+#     steps:
+#       - name: Checkout current repository
+#         uses: actions/checkout@v4
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+      
+#       - name: Set up Git
+#         run: |
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+#       - name: Fetch latest version from source repository
+#         id: get_version
+#         env:
+#           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           # Replace with your source repository
+#           SOURCE_REPO="Sadiq-Chigur/math-utils-library"
+          
+#           # Method 1: Try to get the latest release version
+#           LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName 2>/dev/null || echo "")
+          
+#           # Method 2: If no release exists, try getting the latest tag
+#           if [ -z "$LATEST_VERSION" ]; then
+#             echo "No releases found, checking tags..."
+#             LATEST_VERSION=$(gh api repos/$SOURCE_REPO/tags --jq '.[0].name' 2>/dev/null || echo "")
+#           fi
+          
+#           # Method 3: If no tags exist, check gradle.properties or version file in source repo
+#           if [ -z "$LATEST_VERSION" ]; then
+#             echo "No tags found, checking gradle.properties..."
+#             LATEST_VERSION=$(gh api repos/$SOURCE_REPO/contents/gradle.properties --jq '.content' 2>/dev/null | base64 -d | grep -E '^version=' | cut -d'=' -f2 || echo "")
+#           fi
+          
+#           # Method 4: Check build.gradle in source repo for version string
+#           if [ -z "$LATEST_VERSION" ]; then
+#             echo "Checking build.gradle in source repo..."
+#             BUILD_GRADLE_CONTENT=$(gh api repos/$SOURCE_REPO/contents/build.gradle --jq '.content' 2>/dev/null | base64 -d || echo "")
+            
+#             # Try to find version in format: version = '1.0.0' or version = "1.0.0"
+#             LATEST_VERSION=$(echo "$BUILD_GRADLE_CONTENT" | grep -oP "version\s*=\s*['\"]?\K[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?(?=['\"]?)" | head -1 || echo "")
+#           fi
+          
+#           # Method 5: Get latest commit SHA as fallback
+#           if [ -z "$LATEST_VERSION" ]; then
+#             echo "No version found, using commit SHA..."
+#             LATEST_VERSION=$(gh api repos/$SOURCE_REPO/commits/main --jq '.sha[:7]')
+#           fi
+          
+#           # Remove 'v' prefix if present
+#           LATEST_VERSION=${LATEST_VERSION#v}
+          
+#           # Trim whitespace
+#           LATEST_VERSION=$(echo "$LATEST_VERSION" | xargs)
+          
+#           if [ -z "$LATEST_VERSION" ]; then
+#             echo "Error: Could not determine version from source repository"
+#             exit 1
+#           fi
+          
+#           echo "Latest version: $LATEST_VERSION"
+#           echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+      
+#       - name: Check current version in build.gradle
+#         id: current_version
+#         run: |
+#           CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
+#           echo "Current version: $CURRENT_VERSION"
+#           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+      
+#       - name: Compare versions and update if needed
+#         id: compare
+#         run: |
+#           CURRENT="${{ steps.current_version.outputs.version }}"
+#           LATEST="${{ steps.get_version.outputs.version }}"
+          
+#           if [ "$CURRENT" != "$LATEST" ]; then
+#             echo "needs_update=true" >> $GITHUB_OUTPUT
+#             echo "Version update needed: $CURRENT -> $LATEST"
+#           else
+#             echo "needs_update=false" >> $GITHUB_OUTPUT
+#             echo "Already on latest version: $CURRENT"
+#           fi
+      
+#       - name: Create branch and update build.gradle
+#         if: steps.compare.outputs.needs_update == 'true'
+#         run: |
+#           BRANCH_NAME="update-math-utils-${{ steps.get_version.outputs.version }}"
+#           git checkout -b $BRANCH_NAME
+          
+#           # Update the dependency line in build.gradle
+#           sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
+          
+#           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      
+#       - name: Commit and push changes
+#         if: steps.compare.outputs.needs_update == 'true'
+#         run: |
+#           git add build.gradle
+#           git commit -m "Update math-utils-library to version ${{ steps.get_version.outputs.version }}"
+#           git push origin $BRANCH_NAME
+      
+#       - name: Create Pull Request
+#         if: steps.compare.outputs.needs_update == 'true'
+#         env:
+#           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         run: |
+#           gh pr create \
+#             --title "⬆️ Update math-utils-library to ${{ steps.get_version.outputs.version }}" \
+#             --body "## Dependency Update
+
+#           This PR updates the \`math-utils-library\` dependency.
+          
+#           **Changes:**
+#           - Previous version: \`${{ steps.current_version.outputs.version }}\`
+#           - New version: \`${{ steps.get_version.outputs.version }}\`
+          
+#           **Source:** [Sadiq-Chigur/math-utils-library](https://github.com/Sadiq-Chigur/math-utils-library)
+          
+#           ---
+#           🤖 This PR was automatically created by GitHub Actions" \
+#             --base main \
+#             --head $BRANCH_NAME \
+#             --label "dependencies"
+
+
+
 name: Auto-Update Dependencies from Other Repo
 
 on:
@@ -78,7 +219,14 @@ jobs:
       - name: Check current version in build.gradle
         id: current_version
         run: |
-          CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
+          # Extract version from the dependency line
+          CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | grep -oP "math-utils-library:\K[^'\"]+(?=['\"])" | xargs)
+          
+          if [ -z "$CURRENT_VERSION" ]; then
+            echo "Error: Could not extract current version from build.gradle"
+            exit 1
+          fi
+          
           echo "Current version: $CURRENT_VERSION"
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
       
@@ -114,11 +262,22 @@ jobs:
           git commit -m "Update math-utils-library to version ${{ steps.get_version.outputs.version }}"
           git push origin $BRANCH_NAME
       
+      - name: Ensure dependencies label exists
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Create the label if it doesn't exist
+          gh label create "dependencies" \
+            --description "Pull requests that update dependencies" \
+            --color "0366d6" 2>/dev/null || echo "Label already exists"
+      
       - name: Create Pull Request
         if: steps.compare.outputs.needs_update == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Create PR without label first
           gh pr create \
             --title "⬆️ Update math-utils-library to ${{ steps.get_version.outputs.version }}" \
             --body "## Dependency Update
@@ -133,6 +292,8 @@ jobs:
           
           ---
           🤖 This PR was automatically created by GitHub Actions" \
-            --base main \
-            --head $BRANCH_NAME \
-            --label "dependencies"
+            --base develop \
+            --head $BRANCH_NAME
+          
+          # Try to add label if it exists (non-blocking)
+          gh pr edit $BRANCH_NAME --add-label "dependencies" 2>/dev/null || echo "Label 'dependencies' not found, skipping..."
