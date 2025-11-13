@@ -1,0 +1,52 @@
+# version: 2
+# updates:
+#   - package-ecosystem: "gradle"
+#     directory: "/" # Path where your build.gradle is located
+#     schedule:
+#       interval: "daily"  # or "weekly", or use cron below
+#       time: "00:00"      # (UTC)
+#     registries:
+#       - github-packages
+#     commit-message:
+#       prefix: "⬆️ deps"
+#       include: "scope"
+#     labels:
+#       - dependencies
+#       - automated-pr
+#     open-pull-requests-limit: 5
+#     allow:
+#       - dependency-name: "com.example.Sadiq-Chigur:math-utils-library"
+
+# registries:
+#   github-packages:
+#     type: maven-repository
+#     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+#     username: "${{ github.actor }}"
+#     password: "${{ secrets.GITHUB_TOKEN }}"
+
+
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"  # Location of build.gradle
+    schedule:
+      interval: "daily"   # or "weekly", "live" for instant checks
+    target-branch: "develop"  # Dependabot PRs will be opened to this branch
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    labels:
+      - "dependencies"
+    allow:
+      - dependency-type: "all"
+    registries:
+      - github-packages
+
+registries:
+  github-packages:
+    type: maven-repository
+    url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+    username: "${{ secrets.GITHUB_ACTOR }}"
+    password: "${{ secrets.GITHUB_TOKEN }}"
+
