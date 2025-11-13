@@ -47,6 +47,6 @@ registries:
   github-packages:
     type: maven-repository
     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
-    username: "${{ secrets.USER_GITHUB }}"
+    username: "x-access-token"
     password: "${{ secrets.DEPENDABOTTOKEN }}"
 
