@@ -71,19 +71,19 @@ jobs:
             git push origin "$BRANCH" --force
           fi
 
-      # Step 5: Create Pull Request
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update-math-utils-${{ env.VERSION }}
-          title: "Update math-utils-library to version ${{ env.VERSION }}"
-          body: |
-            Automated dependency update triggered by library publish.
-            This PR updates **math-utils-library** to version **${{ env.VERSION }}**.
-          base: main
-          commit-message: "[create-pull-request] automated change"
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
-          delete-branch: false
-          draft: false
+    #   # Step 5: Create Pull Request
+    #   - name: Create Pull Request
+    #     uses: peter-evans/create-pull-request@v6
+    #     with:
+    #       token: ${{ secrets.GITHUB_TOKEN }}
+    #       branch: update-math-utils-${{ env.VERSION }}
+    #       title: "Update math-utils-library to version ${{ env.VERSION }}"
+    #       body: |
+    #         Automated dependency update triggered by library publish.
+    #         This PR updates **math-utils-library** to version **${{ env.VERSION }}**.
+    #       base: main
+    #       commit-message: "[create-pull-request] automated change"
+    #       committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+    #       author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
+    #       delete-branch: false
+    #       draft: false
