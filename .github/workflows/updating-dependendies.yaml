@@ -27,7 +27,7 @@ jobs:
       - name: Set variables
         run: |
           echo "NEW_VERSION=1.0.0-${{ inputs.version }}" >> $GITHUB_ENV
-          echo "BRANCH_NAME=update-math-utils-${NEW_VERSION//./-}-$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+          echo "BRANCH_NAME=update-math-utils-1.0.0-${{ inputs.version }}" >> $GITHUB_ENV
 
       # 3. Update dependency in build.gradle
       - name: Update math-utils-library version
@@ -38,14 +38,14 @@ jobs:
       # 4. Create a new branch
       - name: Create branch
         run: |
-          BRANCH_NAME="update-math-utils-${{ inputs.version }}"
+          BRANCH_NAME="update-math-utils-1.0.0-${{ inputs.version }}"
           git checkout -b $BRANCH_NAME
 
       # 5. Commit changes
       - name: Commit changes
         run: |
           git add build.gradle
-          git commit -m "Update math-utils-library to 1.0.0-abc123"
+          git commit -m "Update math-utils-library to 1.0.0-${{ inputs.version }}"
 
       # 6. Push branch
       - name: Push branch
@@ -57,19 +57,9 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update math-utils-library to 1.0.0-abc123"
+          commit-message: "Update math-utils-library to 1.0.0-${{ inputs.version }}"
           branch: ${{ github.head_ref }}
           title: "Update math-utils-library version"
-          body: "This PR updates math-utils-library to version 1.0.0-abc123"
+          body: "This PR updates math-utils-library to version 1.0.0-${{ inputs.version }}"
           base: develop
-
-    #             # 4. Create Pull Request with dynamic branch
-    #   - name: Create Pull Request
-    #     uses: peter-evans/create-pull-request@v5
-    #     with:
-    #       token: ${{ secrets.GITHUB_TOKEN }}
-    #       commit-message: "Update math-utils-library to ${NEW_VERSION}"
-    #       title: "Update math-utils-library to ${NEW_VERSION}"
-    #       body: "This PR updates math-utils-library to version ${NEW_VERSION}"
-    #       base: develop
-    #       branch: ${{ env.BRANCH_NAME }}
+          
