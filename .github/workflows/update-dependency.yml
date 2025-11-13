@@ -66,7 +66,7 @@ jobs:
           gh pr create \
             --title "Update math-utils-library to $VERSION" \
             --body "This PR updates the math-utils-library dependency in build.gradle to version $VERSION." \
-            --base main \
+            --base develop \
             --head $BRANCH_NAME
 
     #   # Step 2: Set VERSION environment variable
