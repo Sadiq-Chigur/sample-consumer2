@@ -2,6 +2,10 @@ name: Update Dependency
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "New version of math-utils-library to apply"
+        required: true
 
 jobs:
   update-dependency:
@@ -10,6 +14,8 @@ jobs:
       # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+            token: ${{ secrets.PAT_Token }}
 
       # 2. Set up Git
       - name: Setup Git
