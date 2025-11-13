@@ -303,9 +303,9 @@
 
 name: Auto-Update Dependencies from Other Repo
 
-on:
-  schedule:
-    - cron: "*/5 * * * *" # Every 5 minutes (for testing; change later to daily)
+on:  # commented for testing
+#   schedule:
+#     - cron: "*/5 * * * *" # Every 5 minutes (for testing; change later to daily)
   workflow_dispatch:
 
 jobs:

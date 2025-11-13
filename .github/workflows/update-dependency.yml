@@ -1,10 +1,11 @@
 name: Update Dependency Version
 
-on:
-  repository_dispatch:
-    types: [dependency_update]
+on:  
+# commnented for testing
+#   repository_dispatch:
+#     types: [dependency_update]
 
-#   workflow_dispatch:
+   workflow_dispatch:
 #     inputs:
 #       version:
 #         description: "New version of math-utils-library to apply"
