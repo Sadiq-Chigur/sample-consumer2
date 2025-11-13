@@ -52,24 +52,24 @@ jobs:
         run: |
           git push origin HEAD
 
-    #   # 7. Create Pull Request
-    #   - name: Create Pull Request
-    #     uses: peter-evans/create-pull-request@v5
-    #     with:
-    #       token: ${{ secrets.GITHUB_TOKEN }}
-    #       commit-message: "Update math-utils-library to 1.0.0-abc123"
-    #       branch: ${{ github.head_ref }}
-    #       title: "Update math-utils-library version"
-    #       body: "This PR updates math-utils-library to version 1.0.0-abc123"
-    #       base: develop
-
-                # 4. Create Pull Request with dynamic branch
+      # 7. Create Pull Request
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update math-utils-library to ${NEW_VERSION}"
-          title: "Update math-utils-library to ${NEW_VERSION}"
-          body: "This PR updates math-utils-library to version ${NEW_VERSION}"
+          commit-message: "Update math-utils-library to 1.0.0-abc123"
+          branch: ${{ github.head_ref }}
+          title: "Update math-utils-library version"
+          body: "This PR updates math-utils-library to version 1.0.0-abc123"
           base: develop
-          branch: ${{ env.BRANCH_NAME }}
+
+    #             # 4. Create Pull Request with dynamic branch
+    #   - name: Create Pull Request
+    #     uses: peter-evans/create-pull-request@v5
+    #     with:
+    #       token: ${{ secrets.GITHUB_TOKEN }}
+    #       commit-message: "Update math-utils-library to ${NEW_VERSION}"
+    #       title: "Update math-utils-library to ${NEW_VERSION}"
+    #       body: "This PR updates math-utils-library to version ${NEW_VERSION}"
+    #       base: develop
+    #       branch: ${{ env.BRANCH_NAME }}
