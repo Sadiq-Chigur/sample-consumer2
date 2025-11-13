@@ -420,18 +420,18 @@ jobs:
 
           ---
           🤖 Automatically created by GitHub Actions" \
-            --base main \
+            --base develop \
             --head "$BRANCH_NAME" \
             --label dependencies || echo 'PR already exists.'
 
-      - name: Auto-merge PR
-        if: steps.compare.outputs.needs_update == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "⏳ Waiting 20 seconds before merging..."
-          sleep 20
-          PR_URL=$(gh pr list --head "$BRANCH_NAME" --json url -q '.[0].url')
-          if [ -n "$PR_URL" ]; then
-            gh pr merge "$PR_URL" --merge --delete-branch --admin || echo "⚠️ Auto-merge skipped."
-          fi
+    #   - name: Auto-merge PR
+    #     if: steps.compare.outputs.needs_update == 'true'
+    #     env:
+    #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     run: |
+    #       echo "⏳ Waiting 20 seconds before merging..."
+    #       sleep 20
+    #       PR_URL=$(gh pr list --head "$BRANCH_NAME" --json url -q '.[0].url')
+    #       if [ -n "$PR_URL" ]; then
+    #         gh pr merge "$PR_URL" --merge --delete-branch --admin || echo "⚠️ Auto-merge skipped."
+    #       fi
