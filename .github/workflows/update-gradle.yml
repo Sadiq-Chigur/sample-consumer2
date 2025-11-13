@@ -1,0 +1,53 @@
+name: Update build.gradle Dependency
+
+on:
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      new_version:
+        description: 'New version to update (e.g., 1.0.1-xyz456)'
+        required: true
+        default: '1.0.0-abc123'
+
+jobs:
+  update-dependency:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Create new branch
+        run: |
+          BRANCH_NAME="update-math-utils-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      
+      - name: Update build.gradle
+        run: |
+          sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ github.event.inputs.new_version }}'/" build.gradle
+      
+      - name: Commit changes
+        run: |
+          git add build.gradle
+          git commit -m "Update math-utils-library to version ${{ github.event.inputs.new_version }}"
+      
+      - name: Push branch
+        run: |
+          git push origin $BRANCH_NAME
+      
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --title "Update math-utils-library to ${{ github.event.inputs.new_version }}" \
+            --body "This PR updates the math-utils-library dependency in build.gradle to version ${{ github.event.inputs.new_version }}." \
+            --base develop \
+            --head $BRANCH_NAME
