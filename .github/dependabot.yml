@@ -50,6 +50,7 @@
 #     username: "x-access-token"
 #     password: "${{ secrets.DEPENDABOTTOKEN }}"
 
+
 version: 2
 updates:
   - package-ecosystem: "gradle"
