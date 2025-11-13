@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Ensure all branches are fetched
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Step 2: Set VERSION environment variable
       - name: Set VERSION
@@ -33,57 +34,97 @@ jobs:
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
           echo "Triggered dependency update for version: ${{ github.event.inputs.version }}"
 
-      # Step 3: Update build.gradle
-      - name: Update math-utils-library version in build.gradle
-        run: |
-          echo "Updating math-utils-library version to $VERSION"
-          
-          # Replace the old version with new version
-          sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
-          
-          echo "Updated line:"
-          grep "math-utils-library" build.gradle || echo "❌ No match found!"
-          
-          # Verify update
-          if grep -q "$VERSION" build.gradle; then
-            echo "✅ Version successfully updated in build.gradle"
-          else
-            echo "❌ Version update failed — exiting"
-            exit 1
-          fi
-
-      # Step 4: Commit changes
-      - name: Commit and push changes
+      - name: Set up Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          BRANCH="update-math-utils-$VERSION"
+      - name: Create new branch
+        run: |
+          BRANCH_NAME="update-math-utils-1.0.0-${{ github.event.inputs.version }}"
+          git checkout -b $BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+      - name: Update build.gradle
+        run: |
+          sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ github.event.inputs.version }}'/" build.gradle
+      
+      - name: Commit changes
+        run: |
           git add build.gradle
+          git commit -m "Update math-utils-library to version ${{ github.event.inputs.version }}"
 
-          if git diff --cached --quiet; then
-            echo "No changes to commit — skipping commit and PR creation."
-            exit 0
-          else
-            git commit -m "Update math-utils-library to version $VERSION"
-            git push origin "$BRANCH" --force
-          fi
+      - name: Push branch
+        run: |
+          git push origin $BRANCH_NAME
+      
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr create \
+            --title "Update math-utils-library to ${{ github.event.inputs.version }}" \
+            --body "This PR updates the math-utils-library dependency in build.gradle to version ${{ github.event.inputs.version }}." \
+            --base main \
+            --head $BRANCH_NAME
 
-    #   # Step 5: Create Pull Request
-    #   - name: Create Pull Request
-    #     uses: peter-evans/create-pull-request@v6
-    #     with:
-    #       token: ${{ secrets.GITHUB_TOKEN }}
-    #       branch: update-math-utils-${{ env.VERSION }}
-    #       title: "Update math-utils-library to version ${{ env.VERSION }}"
-    #       body: |
-    #         Automated dependency update triggered by library publish.
-    #         This PR updates **math-utils-library** to version **${{ env.VERSION }}**.
-    #       base: main
-    #       commit-message: "[create-pull-request] automated change"
-    #       committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-    #       author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
-    #       delete-branch: false
-    #       draft: false
+    #   # Step 2: Set VERSION environment variable
+    #   - name: Set VERSION
+    #     run: |
+    #       echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+    #       echo "Triggered dependency update for version: ${{ github.event.inputs.version }}"
+
+    #   # Step 3: Update build.gradle
+    #   - name: Update math-utils-library version in build.gradle
+    #     run: |
+    #       echo "Updating math-utils-library version to $VERSION"
+          
+    #       # Replace the old version with new version
+    #       sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+          
+    #       echo "Updated line:"
+    #       grep "math-utils-library" build.gradle || echo "❌ No match found!"
+          
+    #       # Verify update
+    #       if grep -q "$VERSION" build.gradle; then
+    #         echo "✅ Version successfully updated in build.gradle"
+    #       else
+    #         echo "❌ Version update failed — exiting"
+    #         exit 1
+    #       fi
+
+    #   # Step 4: Commit changes
+    #   - name: Commit and push changes
+    #     run: |
+    #       git config user.name "github-actions[bot]"
+    #       git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    #       BRANCH="update-math-utils-$VERSION"
+
+    #       git checkout -b "$BRANCH" || git checkout "$BRANCH"
+    #       git add build.gradle
+
+    #       if git diff --cached --quiet; then
+    #         echo "No changes to commit — skipping commit and PR creation."
+    #         exit 0
+    #       else
+    #         git commit -m "Update math-utils-library to version $VERSION"
+    #         git push origin "$BRANCH" --force
+    #       fi
+
+    # #   # Step 5: Create Pull Request
+    # #   - name: Create Pull Request
+    # #     uses: peter-evans/create-pull-request@v6
+    # #     with:
+    # #       token: ${{ secrets.GITHUB_TOKEN }}
+    # #       branch: update-math-utils-${{ env.VERSION }}
+    # #       title: "Update math-utils-library to version ${{ env.VERSION }}"
+    # #       body: |
+    # #         Automated dependency update triggered by library publish.
+    # #         This PR updates **math-utils-library** to version **${{ env.VERSION }}**.
+    # #       base: main
+    # #       commit-message: "[create-pull-request] automated change"
+    # #       committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+    # #       author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
+    # #       delete-branch: false
+    # #       draft: false
