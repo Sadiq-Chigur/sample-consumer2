@@ -25,13 +25,40 @@
 #     password: "${{ secrets.GITHUB_TOKEN }}"
 
 
+# version: 2
+# updates:
+#   - package-ecosystem: "gradle"
+#     directory: "/"  # Location of build.gradle
+#     schedule:
+#       interval: "daily"   # or "weekly", "live" for instant checks
+#     target-branch: "develop"  # Dependabot PRs will be opened to this branch
+#     open-pull-requests-limit: 10
+#     commit-message:
+#       prefix: "chore(deps)"
+#       include: "scope"
+#     labels:
+#       - "dependencies"
+#     allow:
+#       - dependency-type: "all"
+#     registries:
+#       - github-packages
+
+# registries:
+#   github-packages:
+#     type: maven-repository
+#     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+#     username: "x-access-token"
+#     password: "${{ secrets.DEPENDABOTTOKEN }}"
+
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/"  # Location of build.gradle
+    directory: "/"                     # Root where build.gradle exists
     schedule:
-      interval: "daily"   # or "weekly", "live" for instant checks
-    target-branch: "develop"  # Dependabot PRs will be opened to this branch
+      interval: "daily"
+      time: "12:30"                    # 12:30 UTC = 18:00 IST
+      timezone: "Asia/Kolkata"
+    target-branch: "develop"           # Dependabot PRs go to 'develop'
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -41,7 +68,7 @@ updates:
     allow:
       - dependency-type: "all"
     registries:
-      - github-packages
+      - github-packages                # Reference to the registry below
 
 registries:
   github-packages:
@@ -49,4 +76,5 @@ registries:
     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
     username: "x-access-token"
     password: "${{ secrets.DEPENDABOTTOKEN }}"
+
 
