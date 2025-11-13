@@ -17,5 +17,5 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.example.sadiqchigurs:math-utils-library:1.0.0-local'
+    implementation 'com.example.sadiqchigurs:math-utils-library:1.0.0-423806b'
 }
