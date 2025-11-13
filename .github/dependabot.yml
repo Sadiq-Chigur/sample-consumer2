@@ -54,12 +54,12 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/"                     # Root where build.gradle exists
+    directory: "/"
     schedule:
       interval: "daily"
-      time: "14:35" # 7:50 PM IST = 14:20 UTC
+      time: "14:35"
       timezone: "Asia/Kolkata"
-    target-branch: "develop"           # Dependabot PRs go to 'develop'
+    target-branch: "develop"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -69,12 +69,12 @@ updates:
     allow:
       - dependency-type: "all"
     registries:
-      - github-packages                # Reference to the registry below
+      - github-packages
 
 registries:
   github-packages:
     type: maven-repository
     url: "https://maven.pkg.github.com/sadiqchigurs/math-utils-library"
-    username: x-access-token
+    username: "sadiqchigurs"  # Use actual username instead of x-access-token
     password: "${{ secrets.DEPENDABOTTOKEN }}"
 
