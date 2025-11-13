@@ -46,10 +46,13 @@ jobs:
             LATEST_VERSION=$(gh api repos/$SOURCE_REPO/contents/gradle.properties --jq '.content' 2>/dev/null | base64 -d | grep -E '^version=' | cut -d'=' -f2 || echo "")
           fi
           
-          # Method 4: Check build.gradle in source repo
+          # Method 4: Check build.gradle in source repo for version string
           if [ -z "$LATEST_VERSION" ]; then
             echo "Checking build.gradle in source repo..."
-            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/contents/build.gradle --jq '.content' 2>/dev/null | base64 -d | grep -E "version[[:space:]]*=" | sed -n "s/.*version[[:space:]]*=[[:space:]]*['\"]\\([^'\"]*\\)['\"].*/\\1/p" | head -1 || echo "")
+            BUILD_GRADLE_CONTENT=$(gh api repos/$SOURCE_REPO/contents/build.gradle --jq '.content' 2>/dev/null | base64 -d || echo "")
+            
+            # Try to find version in format: version = '1.0.0' or version = "1.0.0"
+            LATEST_VERSION=$(echo "$BUILD_GRADLE_CONTENT" | grep -oP "version\s*=\s*['\"]?\K[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?(?=['\"]?)" | head -1 || echo "")
           fi
           
           # Method 5: Get latest commit SHA as fallback
@@ -63,6 +66,11 @@ jobs:
           
           # Trim whitespace
           LATEST_VERSION=$(echo "$LATEST_VERSION" | xargs)
+          
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "Error: Could not determine version from source repository"
+            exit 1
+          fi
           
           echo "Latest version: $LATEST_VERSION"
           echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
