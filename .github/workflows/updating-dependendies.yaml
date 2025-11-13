@@ -95,12 +95,19 @@ jobs:
       # 3. Generate new version dynamically (add run number to make it unique)
       - name: Generate new version
         run: |
-          BASE_VERSION="${{ env.CURRENT_VERSION%%-* }}"
+          # Extract base version (everything before the first dash)
+          BASE_VERSION="${CURRENT_VERSION%%-*}"
+
+          # Append run number to make it unique
           NEW_VERSION="${BASE_VERSION}-${GITHUB_RUN_NUMBER}"
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
           # Create a safe branch name
           BRANCH_NAME="update-math-utils-${NEW_VERSION//./-}"
+
+          # Export to GitHub Actions environment
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
           echo "Generated new version: $NEW_VERSION on branch: $BRANCH_NAME"
 
       # 4. Update the version in build.gradle
