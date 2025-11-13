@@ -2,7 +2,6 @@ name: Auto-Update Dependencies from Other Repo
 
 on:
   schedule:
-    #- cron: '0 0 * * *'  # Run daily at midnight UTC
     - cron: "*/5 * * * *"  # Runs every 5 minutes
   workflow_dispatch:  # Allow manual trigger
 
@@ -32,16 +31,38 @@ jobs:
           # Replace with your source repository
           SOURCE_REPO="Sadiq-Chigur/math-utils-library"
           
-          # Get the latest release version
-          LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName)
+          # Method 1: Try to get the latest release version
+          LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName 2>/dev/null || echo "")
           
-          # If no release exists, try getting the latest tag
+          # Method 2: If no release exists, try getting the latest tag
           if [ -z "$LATEST_VERSION" ]; then
-            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/tags --jq '.[0].name')
+            echo "No releases found, checking tags..."
+            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/tags --jq '.[0].name' 2>/dev/null || echo "")
+          fi
+          
+          # Method 3: If no tags exist, check gradle.properties or version file in source repo
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "No tags found, checking gradle.properties..."
+            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/contents/gradle.properties --jq '.content' 2>/dev/null | base64 -d | grep -E '^version=' | cut -d'=' -f2 || echo "")
+          fi
+          
+          # Method 4: Check build.gradle in source repo
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "Checking build.gradle in source repo..."
+            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/contents/build.gradle --jq '.content' 2>/dev/null | base64 -d | grep -E "version[[:space:]]*=" | sed -n "s/.*version[[:space:]]*=[[:space:]]*['\"]\\([^'\"]*\\)['\"].*/\\1/p" | head -1 || echo "")
+          fi
+          
+          # Method 5: Get latest commit SHA as fallback
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "No version found, using commit SHA..."
+            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/commits/main --jq '.sha[:7]')
           fi
           
           # Remove 'v' prefix if present
           LATEST_VERSION=${LATEST_VERSION#v}
+          
+          # Trim whitespace
+          LATEST_VERSION=$(echo "$LATEST_VERSION" | xargs)
           
           echo "Latest version: $LATEST_VERSION"
           echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
