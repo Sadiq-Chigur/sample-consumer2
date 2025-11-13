@@ -15,12 +15,12 @@
 #       - automated-pr
 #     open-pull-requests-limit: 5
 #     allow:
-#       - dependency-name: "com.example.Sadiq-Chigur:math-utils-library"
+#       - dependency-name: "com.example.sadiqchigurs:math-utils-library"
 
 # registries:
 #   github-packages:
 #     type: maven-repository
-#     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+#     url: "https://maven.pkg.github.com/sadiqchigurs/math-utils-library"
 #     username: "${{ github.actor }}"
 #     password: "${{ secrets.GITHUB_TOKEN }}"
 
@@ -46,7 +46,7 @@
 # registries:
 #   github-packages:
 #     type: maven-repository
-#     url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+#     url: "https://maven.pkg.github.com/sadiqchigurs/math-utils-library"
 #     username: "x-access-token"
 #     password: "${{ secrets.DEPENDABOTTOKEN }}"
 
@@ -73,7 +73,7 @@ updates:
 registries:
   github-packages:
     type: maven-repository
-    url: "https://maven.pkg.github.com/Sadiq-Chigur/math-utils-library"
+    url: "https://maven.pkg.github.com/sadiqchigurs/math-utils-library"
     username: x-access-token
     password: "${{ secrets.DEPENDABOTTOKEN }}"
 

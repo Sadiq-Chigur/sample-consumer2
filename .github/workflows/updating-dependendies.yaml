@@ -33,7 +33,7 @@
 #       - name: Update math-utils-library version
 #         run: |
 #           NEW_VERSION="1.0.0-${{ inputs.version }}"
-#           sed -i "s|implementation 'com.example.Sadiq-Chigur:math-utils-library:.*'|implementation 'com.example.Sadiq-Chigur:math-utils-library:$NEW_VERSION'|" build.gradle
+#           sed -i "s|implementation 'com.example.sadiqchigurs:math-utils-library:.*'|implementation 'com.example.sadiqchigurs:math-utils-library:$NEW_VERSION'|" build.gradle
 
 #       # 4. Create a new branch
 #       - name: Create branch
@@ -88,7 +88,7 @@ jobs:
       - name: Extract current version
         id: extract_version
         run: |
-          CURRENT_VERSION=$(grep -oP "implementation 'com.example.Sadiq-Chigur:math-utils-library:\K[^']+" build.gradle)
+          CURRENT_VERSION=$(grep -oP "implementation 'com.example.sadiqchigurs:math-utils-library:\K[^']+" build.gradle)
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
           echo "Detected current version: $CURRENT_VERSION"
 
@@ -113,7 +113,7 @@ jobs:
       # 4. Update the version in build.gradle
       - name: Update math-utils-library version
         run: |
-          sed -i "s|implementation 'com.example.Sadiq-Chigur:math-utils-library:.*'|implementation 'com.example.Sadiq-Chigur:math-utils-library:${NEW_VERSION}'|" build.gradle
+          sed -i "s|implementation 'com.example.sadiqchigurs:math-utils-library:.*'|implementation 'com.example.sadiqchigurs:math-utils-library:${NEW_VERSION}'|" build.gradle
 
       # 5. Create pull request with dynamic branch
       - name: Create Pull Request

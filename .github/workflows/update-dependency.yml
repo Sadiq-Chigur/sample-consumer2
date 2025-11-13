@@ -48,7 +48,7 @@ jobs:
 
       - name: Update build.gradle
         run: |
-          sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:$VERSION'/" build.gradle
+          sed -i "s/implementation 'com\.example\.sadiqchigurs:math-utils-library:[^']*'/implementation 'com.example.sadiqchigurs:math-utils-library:$VERSION'/" build.gradle
       
       - name: Commit changes
         run: |
@@ -81,7 +81,7 @@ jobs:
     #       echo "Updating math-utils-library version to $VERSION"
           
     #       # Replace the old version with new version
-    #       sed -i -E "s|(implementation\s+['\"]com\.example\.Sadiq-Chigur:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
+    #       sed -i -E "s|(implementation\s+['\"]com\.example\.sadiqchigurs:math-utils-library:)[^'\"]*(['\"])|\1$VERSION\2|" build.gradle
           
     #       echo "Updated line:"
     #       grep "math-utils-library" build.gradle || echo "❌ No match found!"
@@ -126,6 +126,6 @@ jobs:
     # #       base: main
     # #       commit-message: "[create-pull-request] automated change"
     # #       committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-    # #       author: Sadiq-Chigur <216648181+Sadiq-Chigur@users.noreply.github.com>
+    # #       author: sadiqchigurs <216648181+sadiqchigurs@users.noreply.github.com>
     # #       delete-branch: false
     # #       draft: false

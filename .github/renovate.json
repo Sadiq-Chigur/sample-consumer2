@@ -5,7 +5,7 @@
   "packageRules": [
     {
       "matchDatasources": ["maven"],
-      "matchPackagePrefixes": ["com.example.Sadiq-Chigur:math-utils-library"],
+      "matchPackagePrefixes": ["com.example.sadiqchigurs:math-utils-library"],
       "automerge": false
     }
   ],

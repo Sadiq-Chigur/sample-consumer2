@@ -29,7 +29,7 @@
 # #           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # #         run: |
 # #           # Replace with your source repository
-# #           SOURCE_REPO="Sadiq-Chigur/math-utils-library"
+# #           SOURCE_REPO="sadiqchigurs/math-utils-library"
           
 # #           # Method 1: Try to get the latest release version
 # #           LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName 2>/dev/null || echo "")
@@ -78,7 +78,7 @@
 # #       - name: Check current version in build.gradle
 # #         id: current_version
 # #         run: |
-# #           CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
+# #           CURRENT_VERSION=$(grep "com.example.sadiqchigurs:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
 # #           echo "Current version: $CURRENT_VERSION"
 # #           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
       
@@ -103,7 +103,7 @@
 # #           git checkout -b $BRANCH_NAME
           
 # #           # Update the dependency line in build.gradle
-# #           sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
+# #           sed -i "s/implementation 'com\.example\.sadiqchigurs:math-utils-library:[^']*'/implementation 'com.example.sadiqchigurs:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
           
 # #           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
       
@@ -129,7 +129,7 @@
 # #           - Previous version: \`${{ steps.current_version.outputs.version }}\`
 # #           - New version: \`${{ steps.get_version.outputs.version }}\`
           
-# #           **Source:** [Sadiq-Chigur/math-utils-library](https://github.com/Sadiq-Chigur/math-utils-library)
+# #           **Source:** [sadiqchigurs/math-utils-library](https://github.com/sadiqchigurs/math-utils-library)
           
 # #           ---
 # #           🤖 This PR was automatically created by GitHub Actions" \
@@ -170,7 +170,7 @@
 #           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #         run: |
 #           # Replace with your source repository
-#           SOURCE_REPO="Sadiq-Chigur/math-utils-library"
+#           SOURCE_REPO="sadiqchigurs/math-utils-library"
           
 #           # Method 1: Try to get the latest release version
 #           LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName 2>/dev/null || echo "")
@@ -220,7 +220,7 @@
 #         id: current_version
 #         run: |
 #           # Extract version from the dependency line
-#           CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | grep -oP "math-utils-library:\K[^'\"]+(?=['\"])" | xargs)
+#           CURRENT_VERSION=$(grep "com.example.sadiqchigurs:math-utils-library:" build.gradle | grep -oP "math-utils-library:\K[^'\"]+(?=['\"])" | xargs)
           
 #           if [ -z "$CURRENT_VERSION" ]; then
 #             echo "Error: Could not extract current version from build.gradle"
@@ -251,7 +251,7 @@
 #           git checkout -b $BRANCH_NAME
           
 #           # Update the dependency line in build.gradle
-#           sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
+#           sed -i "s/implementation 'com\.example\.sadiqchigurs:math-utils-library:[^']*'/implementation 'com.example.sadiqchigurs:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
           
 #           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
       
@@ -288,7 +288,7 @@
 #           - Previous version: \`${{ steps.current_version.outputs.version }}\`
 #           - New version: \`${{ steps.get_version.outputs.version }}\`
           
-#           **Source:** [Sadiq-Chigur/math-utils-library](https://github.com/Sadiq-Chigur/math-utils-library)
+#           **Source:** [sadiqchigurs/math-utils-library](https://github.com/sadiqchigurs/math-utils-library)
           
 #           ---
 #           🤖 This PR was automatically created by GitHub Actions" \
@@ -331,7 +331,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SOURCE_REPO="Sadiq-Chigur/math-utils-library"
+          SOURCE_REPO="sadiqchigurs/math-utils-library"
 
           # Try latest release first
           LATEST_VERSION=$(gh release view --repo "$SOURCE_REPO" --json tagName -q .tagName || true)
@@ -359,7 +359,7 @@ jobs:
       - name: Check current version in build.gradle
         id: current_version
         run: |
-          CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
+          CURRENT_VERSION=$(grep "com.example.sadiqchigurs:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
           echo "Current version: $CURRENT_VERSION"
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
@@ -390,7 +390,7 @@ jobs:
           git checkout -b "$BRANCH_NAME"
 
           # Update the dependency version (handles any suffix like -d81d7f9)
-          sed -i "s|implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'|implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ steps.get_version.outputs.version }}'|" build.gradle
+          sed -i "s|implementation 'com\.example\.sadiqchigurs:math-utils-library:[^']*'|implementation 'com.example.sadiqchigurs:math-utils-library:${{ steps.get_version.outputs.version }}'|" build.gradle
 
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
@@ -416,7 +416,7 @@ jobs:
           - Previous version: \`${{ steps.current_version.outputs.version }}\`
           - New version: \`${{ steps.get_version.outputs.version }}\`
 
-          **Source:** [Sadiq-Chigur/math-utils-library](https://github.com/Sadiq-Chigur/math-utils-library)
+          **Source:** [sadiqchigurs/math-utils-library](https://github.com/sadiqchigurs/math-utils-library)
 
           ---
           🤖 Automatically created by GitHub Actions" \

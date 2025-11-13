@@ -35,7 +35,7 @@ jobs:
       
       - name: Update build.gradle
         run: |
-          sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ github.event.inputs.new_version }}'/" build.gradle
+          sed -i "s/implementation 'com\.example\.sadiqchigurs:math-utils-library:[^']*'/implementation 'com.example.sadiqchigurs:math-utils-library:${{ github.event.inputs.new_version }}'/" build.gradle
       
       - name: Commit changes
         run: |
