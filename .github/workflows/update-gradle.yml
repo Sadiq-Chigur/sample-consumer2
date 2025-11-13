@@ -11,12 +11,16 @@ on:
 jobs:
   update-dependency:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Git
         run: |
@@ -49,5 +53,5 @@ jobs:
           gh pr create \
             --title "Update math-utils-library to ${{ github.event.inputs.new_version }}" \
             --body "This PR updates the math-utils-library dependency in build.gradle to version ${{ github.event.inputs.new_version }}." \
-            --base develop \
+            --base main \
             --head $BRANCH_NAME
