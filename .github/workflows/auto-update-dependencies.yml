@@ -1,0 +1,109 @@
+name: Auto-Update Dependencies from Other Repo
+
+on:
+  schedule:
+    #- cron: '0 0 * * *'  # Run daily at midnight UTC
+    - cron: "*/5 * * * *"  # Runs every 5 minutes
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout current repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      
+      - name: Fetch latest version from source repository
+        id: get_version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Replace with your source repository
+          SOURCE_REPO="Sadiq-Chigur/math-utils-library"
+          
+          # Get the latest release version
+          LATEST_VERSION=$(gh release view --repo $SOURCE_REPO --json tagName -q .tagName)
+          
+          # If no release exists, try getting the latest tag
+          if [ -z "$LATEST_VERSION" ]; then
+            LATEST_VERSION=$(gh api repos/$SOURCE_REPO/tags --jq '.[0].name')
+          fi
+          
+          # Remove 'v' prefix if present
+          LATEST_VERSION=${LATEST_VERSION#v}
+          
+          echo "Latest version: $LATEST_VERSION"
+          echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Check current version in build.gradle
+        id: current_version
+        run: |
+          CURRENT_VERSION=$(grep "com.example.Sadiq-Chigur:math-utils-library:" build.gradle | sed -n "s/.*math-utils-library:\([^']*\).*/\1/p" | tr -d ' ')
+          echo "Current version: $CURRENT_VERSION"
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Compare versions and update if needed
+        id: compare
+        run: |
+          CURRENT="${{ steps.current_version.outputs.version }}"
+          LATEST="${{ steps.get_version.outputs.version }}"
+          
+          if [ "$CURRENT" != "$LATEST" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "Version update needed: $CURRENT -> $LATEST"
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "Already on latest version: $CURRENT"
+          fi
+      
+      - name: Create branch and update build.gradle
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          BRANCH_NAME="update-math-utils-${{ steps.get_version.outputs.version }}"
+          git checkout -b $BRANCH_NAME
+          
+          # Update the dependency line in build.gradle
+          sed -i "s/implementation 'com\.example\.Sadiq-Chigur:math-utils-library:[^']*'/implementation 'com.example.Sadiq-Chigur:math-utils-library:${{ steps.get_version.outputs.version }}'/" build.gradle
+          
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      
+      - name: Commit and push changes
+        if: steps.compare.outputs.needs_update == 'true'
+        run: |
+          git add build.gradle
+          git commit -m "Update math-utils-library to version ${{ steps.get_version.outputs.version }}"
+          git push origin $BRANCH_NAME
+      
+      - name: Create Pull Request
+        if: steps.compare.outputs.needs_update == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "⬆️ Update math-utils-library to ${{ steps.get_version.outputs.version }}" \
+            --body "## Dependency Update
+
+          This PR updates the \`math-utils-library\` dependency.
+          
+          **Changes:**
+          - Previous version: \`${{ steps.current_version.outputs.version }}\`
+          - New version: \`${{ steps.get_version.outputs.version }}\`
+          
+          **Source:** [Sadiq-Chigur/math-utils-library](https://github.com/Sadiq-Chigur/math-utils-library)
+          
+          ---
+          🤖 This PR was automatically created by GitHub Actions" \
+            --base main \
+            --head $BRANCH_NAME \
+            --label "dependencies"
