@@ -1,0 +1,52 @@
+name: Update Dependency
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update-dependency:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Git
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 3. Update dependency in build.gradle
+      - name: Update math-utils-library version
+        run: |
+          NEW_VERSION="1.0.0-abc123"
+          sed -i "s|implementation 'com.example.Sadiq-Chigur:math-utils-library:.*'|implementation 'com.example.Sadiq-Chigur:math-utils-library:$NEW_VERSION'|" build.gradle
+
+      # 4. Create a new branch
+      - name: Create branch
+        run: |
+          BRANCH_NAME="update-math-utils-$GITHUB_RUN_NUMBER"
+          git checkout -b $BRANCH_NAME
+
+      # 5. Commit changes
+      - name: Commit changes
+        run: |
+          git add build.gradle
+          git commit -m "Update math-utils-library to 1.0.0-abc123"
+
+      # 6. Push branch
+      - name: Push branch
+        run: |
+          git push origin HEAD
+
+      # 7. Create Pull Request
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update math-utils-library to 1.0.0-abc123"
+          branch: ${{ github.head_ref }}
+          title: "Update math-utils-library version"
+          body: "This PR updates math-utils-library to version 1.0.0-abc123"
+          base: develop
