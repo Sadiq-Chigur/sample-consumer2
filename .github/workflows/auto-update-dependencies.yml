@@ -341,11 +341,20 @@ jobs:
             LATEST_VERSION=$(gh api repos/$SOURCE_REPO/tags --jq '.[0].name' || true)
           fi
 
+          # Fallback to latest commit short SHA if no tag found
+          if [ -z "$LATEST_VERSION" ]; then
+            SHORT_SHA=$(gh api repos/$SOURCE_REPO/commits --jq '.[0].sha[:7]' || true)
+            if [ -n "$SHORT_SHA" ]; then
+              LATEST_VERSION="1.0.0-$SHORT_SHA"
+            fi
+          fi
+
           # Remove leading 'v' if present
           LATEST_VERSION=${LATEST_VERSION#v}
 
           echo "Latest version: $LATEST_VERSION"
           echo "version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+
 
       - name: Check current version in build.gradle
         id: current_version
