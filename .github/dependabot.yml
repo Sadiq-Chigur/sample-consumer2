@@ -56,7 +56,7 @@ updates:
     directory: "/"                     # Root where build.gradle exists
     schedule:
       interval: "daily"
-      time: "14:20" # 7:50 PM IST = 14:20 UTC
+      time: "14:35" # 7:50 PM IST = 14:20 UTC
       timezone: "Asia/Kolkata"
     target-branch: "develop"           # Dependabot PRs go to 'develop'
     open-pull-requests-limit: 10
