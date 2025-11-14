@@ -8,10 +8,10 @@ version = "1.0.0"
 repositories {
     mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/Sadiq-Chigur/sample-consumer2")
+        url = uri("https://maven.pkg.github.com/sadiqchigurs/math-utils-library")
         credentials {
-            username = System.getenv("GITHUB_ACTOR")
-            password = System.getenv("GITHUB_TOKEN")
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
         }
     }
 }
