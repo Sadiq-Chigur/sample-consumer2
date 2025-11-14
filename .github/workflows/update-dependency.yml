@@ -1,7 +1,6 @@
 name: Update Dependency Version
 
-on:  
- commnented for testing
+on:
    repository_dispatch:
      types: [dependency_update]
 
@@ -14,8 +13,6 @@ permissions:
 jobs:
   update-gradle-version:
     runs-on: ubuntu-latest
-    # env:
-    #   VERSION: ${{ github.event.inputs.version }}
 
     steps:
       # Step 1: Checkout the repo
