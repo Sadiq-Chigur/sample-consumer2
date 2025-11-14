@@ -1,15 +1,11 @@
 name: Update Dependency Version
 
 on:  
-# commnented for testing
-#   repository_dispatch:
-#     types: [dependency_update]
+ commnented for testing
+   repository_dispatch:
+     types: [dependency_update]
 
    workflow_dispatch:
-#     inputs:
-#       version:
-#         description: "New version of math-utils-library to apply"
-#         required: true
 
 permissions:
   contents: write
@@ -43,7 +39,7 @@ jobs:
 
       - name: Create new branch
         run: |
-          BRANCH_NAME="update-math-utils-1.0.0-$VERSION"
+          BRANCH_NAME="update-math-utils-$VERSION"
           git checkout -b $BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
